@@ -355,7 +355,7 @@ func readMatrixOrVector(iter *jsoniter.Iterator, resultType string) *backend.Dat
 	timeField.Name = data.TimeSeriesTimeFieldName
 	frame := data.NewFrame("", timeField)
 	frame.Meta = &data.FrameMeta{
-		Type:   data.FrameTypeTimeSeriesMany,
+		Type:   data.FrameTypeTimeSeriesWide,
 		Custom: resultTypeToCustomMeta(resultType),
 	}
 	rsp := &backend.DataResponse{
@@ -363,7 +363,7 @@ func readMatrixOrVector(iter *jsoniter.Iterator, resultType string) *backend.Dat
 	}
 
 	for iter.ReadArray() {
-		valueField := data.NewFieldFromFieldType(data.FieldTypeFloat64, frame.Rows())
+		valueField := data.NewFieldFromFieldType(data.FieldTypeNullableFloat64, frame.Rows())
 		valueField.Name = data.TimeSeriesValueFieldName
 		valueField.Labels = data.Labels{}
 		frame.Fields = append(frame.Fields, valueField)
@@ -408,7 +408,7 @@ func addValueToFrame(frame *data.Frame, timeMap map[int64]int, rowIdx int, iter 
 	}
 
 	timeField.Set(i, t)
-	valueField.Set(i, v)
+	valueField.Set(i, &v)
 
 	return timeMap, rowIdx
 }
